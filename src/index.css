@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.tx-500 {
+    @apply font-poppins text-22 font-500;
+}
+
+.tx-600 {
+    @apply font-poppins text-16 font-600;
+}
