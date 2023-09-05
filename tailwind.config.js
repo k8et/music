@@ -34,7 +34,7 @@ module.exports = {
         white: '#fff',
         lightGray: '#d1d1d1',
         lightGray2: '#363636',
-        lightGray3: '#323338',
+        lightGray3: '#2d2d3a',
       },
       animation: {
         slideup: 'slideup 1s ease-in-out',

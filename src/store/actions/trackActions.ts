@@ -11,12 +11,12 @@ export const getTopCharts = createAsyncThunk('tracks/getTopCharts', async () => 
     }
 });
 
-export const getSongsByGenre = createAsyncThunk('tracks/getSongsByGenre', async () => {
+export const getSongsByGenre = createAsyncThunk('tracks/getSongsByGenre', async (genre: string) => {
     try {
         const response = await axios.get('https://shazam-core7.p.rapidapi.com/charts/get-top-songs-in_world_by_genre', {
             params: {
-                genre: 'DANCE',
-                limit: '10'
+                genre: genre,
+                limit: '9'
             },
             headers: {
                 'X-RapidAPI-Key': '85a9970cb2msh8160968b53a049dp15a532jsnb7e972328843',
