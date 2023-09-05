@@ -10,7 +10,6 @@ export const getTopCharts = createAsyncThunk('tracks/getTopCharts', async () => 
         throw error;
     }
 });
-
 export const getSongsByGenre = createAsyncThunk('tracks/getSongsByGenre', async (genre: string) => {
     try {
         const response = await axios.get('https://shazam-core7.p.rapidapi.com/charts/get-top-songs-in_world_by_genre', {

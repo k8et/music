@@ -1,8 +1,10 @@
 import { configureStore, ThunkAction } from '@reduxjs/toolkit';
 import tracksReducer from './actions/trackActions';
+import trackLinkReducer from './actions/trackLinkActions';
 const store = configureStore({
     reducer: {
         tracks: tracksReducer,
+        tracksLink: trackLinkReducer,
     },
 });
 
