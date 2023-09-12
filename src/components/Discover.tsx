@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import {getSongsByGenre} from '../store/actions/trackActions';
@@ -17,23 +17,18 @@ const ScrollableContainer = styled.div`
     background-color: transparent; 
   }
 `;
-const TrackList: React.FC = () => {
+interface TrackListProps{
+    handleTrackClick: (trackKey: any) => Promise<void>;
+}
+const TrackList: FC<TrackListProps> = ({handleTrackClick}) => {
     const dispatch: AppDispatch = useDispatch();
     const tracks = useSelector((state: any) => state.tracks);
     const [genre, setGenre] = useState<string>('POP');
-    const [selectedTrackUri, setSelectedTrackUri] = useState<string | null>(null);
-    console.log(selectedTrackUri)
+
     useEffect(() => {
         dispatch(getSongsByGenre(genre));
     }, [dispatch, genre]);
-    const handleTrackClick = async (trackKey: any) => {
-        try {
-            const trackDetails = await dispatch(fetchTrackDetails(trackKey));
-            setSelectedTrackUri(trackDetails.payload);
-        } catch (error) {
-            console.error('Ошибка при получении трека:', error);
-        }
-    };
+
     const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setGenre(e.target.value);
     };
@@ -74,9 +69,6 @@ const TrackList: React.FC = () => {
                                 {track.subtitle}
                             </p>
                         </div>
-                        {selectedTrackUri && (
-                            <AudioPlayer trackUrl={selectedTrackUri} />
-                        )}
                     </div>
 
                 ))}

@@ -1,9 +1,7 @@
-// trackSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Create an async thunk for fetching track details
 export const fetchTrackDetails = createAsyncThunk(
     'tracks/fetchTrackLink',
     async (trackKey: string, { rejectWithValue }) => {
@@ -18,7 +16,7 @@ export const fetchTrackDetails = createAsyncThunk(
                 },
             });
 
-            const trackUri = response.data.hub.actions[1].uri;
+            const trackUri = response.data;
             console.log(trackUri)
             if (!trackUri) {
                 throw new Error('Track URI not found in response.');
@@ -30,7 +28,6 @@ export const fetchTrackDetails = createAsyncThunk(
     }
 );
 
-// Create a slice for tracks
 const trackLinkSlice = createSlice({
     name: 'tracksLink',
     initialState: {
