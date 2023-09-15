@@ -1,92 +1,133 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
+import ReactAudioPlayer from "react-audio-player";
 
-const StyledAudioPlayer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background-color: #333;
-  color: white;
-  border-radius: 4px;
+interface PlayerProps {
+    tracks: any[];
+    currentTrackIndex: number;
+    isPlaying: boolean;
+    setIsPlaying: (isPlaying: boolean) => void;
+    setCurrentTrackIndex: (index: number) => void;
+}
+
+const PlayerContainer = styled.div`
+  background-color: rgba(49, 47, 47, 0.9);
+  position: absolute;
+  bottom: 0;
+  padding: 20px;
   width: 100%;
-  max-width: 400px;
+  border-radius: 10px;
 `;
 
-const AudioControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
+const ControlButton = styled.button`
+  background-color: #fff;
+  color: #333;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
-const AudioProgressBar = styled.input`
-  width: 100%;
+const TrackInfo = styled.div`
+  color: #fff;
+  margin-bottom: 10px;
 `;
 
-const AudioPlayer: React.FC<{ trackUrl: string }> = ({ trackUrl }) => {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+const Player: React.FC<PlayerProps> = ({
+                                           tracks,
+                                           currentTrackIndex,
+                                           isPlaying,
+                                           setIsPlaying,
+                                           setCurrentTrackIndex,
+                                       }) => {
+    const [volume, setVolume] = useState(0.5);
     const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
+    const currentTrack = tracks[currentTrackIndex];
+    const audioRef = useRef<ReactAudioPlayer | null>(null);
 
-    useEffect(() => {
-        const audio = audioRef.current;
-
-        if (audio) {
-            audio.src = trackUrl;
-
-            audio.addEventListener('loadedmetadata', () => {
-                setDuration(Math.floor(audio.duration));
-            });
-
-            audio.addEventListener('timeupdate', () => {
-                setCurrentTime(Math.floor(audio.currentTime));
-            });
-
+    const playPauseToggle = () => {
+        if (audioRef.current && audioRef.current.audioEl.current) {
             if (isPlaying) {
-                audio.play();
+                audioRef.current.audioEl.current.pause(); // Приостанавливаем воспроизведение
             } else {
-                audio.pause();
+                audioRef.current.audioEl.current.play(); // Воспроизводим
             }
+            setIsPlaying(!isPlaying);
         }
-    }, [isPlaying, trackUrl]);
-
-    const togglePlayPause = () => {
-        setIsPlaying(!isPlaying);
     };
 
-    const handleSeekBarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTime = Number(e.target.value);
-        setCurrentTime(newTime);
+    const playNextTrack = () => {
+        if (currentTrackIndex < tracks.length - 1) {
+            setIsPlaying(false);
+            const nextTrackIndex = currentTrackIndex + 1;
+            if (nextTrackIndex < tracks.length) {
+                setCurrentTrackIndex(nextTrackIndex);
+                setIsPlaying(true);
+            }
+        }
+    };
 
-        if (audioRef.current) {
-            audioRef.current.currentTime = newTime;
+    const playPreviousTrack = () => {
+        if (currentTrackIndex > 0) {
+            setIsPlaying(false);
+            const previousTrackIndex = currentTrackIndex - 1;
+            if (previousTrackIndex >= 0) {
+                setCurrentTrackIndex(previousTrackIndex);
+                setIsPlaying(true);
+            }
+        }
+    };
+
+    const handleVolumeChange = (newVolume: number) => {
+        setVolume(newVolume);
+    };
+
+    const handleTimeChange = (newTime: number) => {
+        if (audioRef.current && audioRef.current.audioEl.current) {
+            audioRef.current.audioEl.current.currentTime = newTime;
+            setCurrentTime(newTime);
         }
     };
 
     return (
-        <StyledAudioPlayer>
-            <AudioControls>
-                <button onClick={togglePlayPause}>
-                    {isPlaying ? 'Пауза' : 'Воспроизвести'}
-                </button>
-                <span>{`${Math.floor(currentTime / 60)}:${(currentTime % 60)
-                    .toString()
-                    .padStart(2, '0')}`}</span>
-            </AudioControls>
-            <AudioProgressBar
-                type="range"
-                min={0}
-                max={duration}
-                value={currentTime}
-                onChange={handleSeekBarChange}
+        <PlayerContainer>
+            <TrackInfo>{currentTrack.title}</TrackInfo>
+            <ReactAudioPlayer
+                ref={audioRef}
+                src={currentTrack.hub.actions[1].uri}
+                autoPlay={isPlaying}
+                volume={volume}
+                controls={false}
+                onListen={(e: any) => setCurrentTime(e.target.currentTime)}
             />
-            <span>{`${Math.floor(duration / 60)}:${(duration % 60)
-                .toString()
-                .padStart(2, '0')}`}</span>
-            <audio ref={audioRef} preload="metadata" />
-        </StyledAudioPlayer>
+            <div>
+                <ControlButton onClick={playPreviousTrack}>Предыдущий трек</ControlButton>
+                <ControlButton onClick={playPauseToggle}>
+                    {isPlaying ? 'Пауза' : 'Воспроизвести'}
+                </ControlButton>
+                <ControlButton onClick={playNextTrack}>Следующий трек</ControlButton>
+
+                <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={volume}
+                    onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                />
+
+                <input
+                    type="range"
+                    min={0}
+                    max={audioRef.current?.audioEl.current?.duration || 0}
+                    step={1}
+                    value={currentTime}
+                    onChange={(e) => handleTimeChange(parseFloat(e.target.value))}
+                />
+            </div>
+        </PlayerContainer>
     );
 };
 
-export default AudioPlayer;
+export default Player;
