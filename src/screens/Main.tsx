@@ -12,7 +12,7 @@ interface MainProps {
 }
 
 const Main: FC<MainProps> = ({
-                                 tracks,
+    tracks,
                                  setCurrentTrackIndex,
                                  setIsPlaying,
                                  genre,

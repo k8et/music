@@ -48,7 +48,6 @@ const Discover: React.FC<DiscoverProps> = ({
         setCurrentTrackIndex(trackIndex);
         setIsPlaying(true);
     };
-console.log(tracks)
     const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setGenre(e.target.value);
     };
