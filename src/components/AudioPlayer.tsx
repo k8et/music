@@ -1,18 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import ReactAudioPlayer from 'react-audio-player';
-
-interface PlayerProps {
-    tracks: any[];
-    currentTrackIndex: number;
-    isPlaying: boolean;
-    setIsPlaying: (isPlaying: boolean) => void;
-    setCurrentTrackIndex: (index: number) => void;
-}
+import {useDispatch, useSelector} from "react-redux";
+import {nextSong, playPause, prevSong,} from "../store/slice/player";
 
 const PlayerContainer = styled.div`
   position: absolute;
-  height: 7rem; 
+  height: 7rem;
   bottom: 0;
   left: 0;
   right: 0;
@@ -35,7 +28,12 @@ const PlayerContainer = styled.div`
 `;
 
 const TrackInfo = styled.div`
+  padding: 5px;
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
 `;
 
 const ControlButton = styled.button`
@@ -55,127 +53,137 @@ const ControlButtonContainer = styled.div`
 
 const SliderContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  width: 300px;
+  justify-content: center;
   align-items: center;
+  gap: 5px;
   color: #fff;
 `;
 
 const SliderTime = styled.input`
-  width: 100%;
+  width: 70%;
   height: 5px;
   margin-top: 8px;
 `;
 
 const SliderVol = styled.input`
-  width: 100%;
+  width: 100px;
   height: 5px;
-  margin-top: 8px;
+`;
+const TimeInfoContainer = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 3px;
+  justify-content: center;
+  color: #fff;
+`;
+const ControlContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 100%;
 `;
 
-const Player: React.FC<PlayerProps> = ({
-                                           tracks,
-                                           currentTrackIndex,
-                                           isPlaying,
-                                           setIsPlaying,
-                                           setCurrentTrackIndex,
-                                       }) => {
-    const [volume, setVolume] = useState(0.5);
-    const [currentTime, setCurrentTime] = useState<any>(0);
-    const currentTrack = tracks[currentTrackIndex];
-    const audioRef = useRef<ReactAudioPlayer | null>(null);
+const Player = () => {
+    const dispatch = useDispatch();
+    const playerState = useSelector((state: any) => state.player);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [currentTime, setCurrentTime] = useState<number>(0);
+    const [volume, setVolume] = useState(0.3);
+
 
     useEffect(() => {
-        setInterval(() => {
-            if (audioRef.current && audioRef.current.audioEl.current && isPlaying) {
-                setCurrentTime(audioRef.current.audioEl.current.currentTime || 0);
+        if (audioRef.current) {
+            audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+        }
+
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
             }
-        }, 1000);
-    }, [isPlaying]);
-    useEffect(() => {
-        setTimeout(() => {
-            setCurrentTime(0);
-        }, 300);
-    }, [currentTrack]);
-    const playPauseToggle = () => {
-        if (audioRef.current && audioRef.current.audioEl.current) {
-            if (isPlaying) {
-                audioRef.current.audioEl.current.pause();
-            } else {
-                audioRef.current.audioEl.current.play();
-            }
-            setIsPlaying(!isPlaying);
+        };
+    }, []);
+
+    const handleTimeUpdate = () => {
+        if (audioRef.current) {
+            setCurrentTime(audioRef.current.currentTime);
         }
     };
-
-    const playNextTrack = () => {
-        if (currentTrackIndex < tracks.length - 1) {
-            setIsPlaying(false);
-            const nextTrackIndex = currentTrackIndex + 1;
-            if (nextTrackIndex < tracks.length) {
-                setCurrentTrackIndex(nextTrackIndex);
-                setIsPlaying(true);
-            }
-        }
-    };
-
-    const playPreviousTrack = () => {
-        if (currentTrackIndex > 0) {
-            setIsPlaying(false);
-            const previousTrackIndex = currentTrackIndex - 1;
-            if (previousTrackIndex >= 0) {
-                setCurrentTrackIndex(previousTrackIndex);
-                setIsPlaying(true);
-            }
-        }
-    };
-
     const handleVolumeChange = (newVolume: number) => {
         setVolume(newVolume);
+
+        if (audioRef.current) {
+            audioRef.current.volume = newVolume;
+        }
+    };
+
+    const handlePlayPause = () => {
+        const audioElement = audioRef.current;
+
+        if (audioElement) {
+            if (playerState.isPlaying) {
+                audioElement.pause();
+            } else {
+                audioElement.play();
+            }
+
+            dispatch(playPause(!playerState.isPlaying));
+        }
+    };
+
+    const handleNextSong = () => {
+        dispatch(nextSong(playerState.currentIndex + 1));
+    };
+
+    const handlePrevSong = () => {
+        dispatch(prevSong(playerState.currentIndex - 1));
     };
 
     const handleTimeChange = (newTime: number) => {
-        if (audioRef.current && audioRef.current.audioEl.current) {
-            audioRef.current.audioEl.current.currentTime = newTime;
-            setCurrentTime(newTime);
+        if (audioRef.current) {
+            audioRef.current.currentTime = newTime;
         }
     };
+
 
 
     return (
         <PlayerContainer>
-            <TrackInfo>{currentTrack.title}</TrackInfo>
-            <ReactAudioPlayer
+            <TrackInfo>{playerState.activeSong.title}</TrackInfo>
+            <audio
                 ref={audioRef}
-                src={currentTrack.hub.actions[1].uri}
-                autoPlay={isPlaying}
+                autoPlay={playerState.isActive}
+                src={playerState?.activeSong?.hub?.actions[1]?.uri}
+                onEnded={handleNextSong}
+                // @ts-ignore
                 volume={volume}
-                controls={false}
             />
-            <div className='flex-col w-full'>
+
+            <ControlContainer>
                 <ControlButtonContainer>
-                    <ControlButton onClick={playPreviousTrack}>◄</ControlButton>
-                    <ControlButton onClick={playPauseToggle}>
-                        {isPlaying ? <i className='bx bx-pause text-3xl'></i> : <i className='bx bx-play text-3xl'></i>}
+                    <ControlButton onClick={handlePrevSong}><i
+                        className='bx bx-skip-previous text-3xl'></i></ControlButton>
+                    <ControlButton onClick={handlePlayPause}>
+                        {playerState.isPlaying ? <i className='bx bx-pause text-3xl '></i> :
+                            <i className='bx bx-play text-3xl'></i>}
                     </ControlButton>
-                    <ControlButton onClick={playNextTrack}>►</ControlButton>
+                    <ControlButton onClick={handleNextSong}><i className='bx bx-skip-next text-3xl'></i></ControlButton>
                 </ControlButtonContainer>
-                <SliderContainer>
-                    <div>
-                        {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(0).padStart(2, '0')}
-                        {' / '}
-                        <span>1:30</span>
-                    </div>
+                <TimeInfoContainer>
+                    {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(0).padStart(2, '0')}
                     <SliderTime
                         type="range"
                         min={0}
-                        max={audioRef.current?.audioEl.current?.duration || 0}
+                        max={100}
                         step={1}
                         value={currentTime ? currentTime : 0}
                         onChange={(e) => handleTimeChange(Number(e.target.value))}
                     />
-                </SliderContainer>
-            </div>
+                    <span>1:30</span>
+                </TimeInfoContainer>
+            </ControlContainer>
             <SliderContainer>
+                <i className='bx bx-volume-full'></i>
                 <SliderVol
                     type="range"
                     min={0}

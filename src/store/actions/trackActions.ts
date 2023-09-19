@@ -12,7 +12,7 @@ export const myApi = createApi({
     }),
     endpoints: (builder) => ({
         getTopCharts: builder.query({
-            query: () => 'charts/get-top-songs-in-world',
+            query: (id) => `songs/list-recommendations?id=${id}&limit=4`,
         }),
         getSongsByGenre: builder.query({
             query: (genre) => `charts/get-top-songs-in_world_by_genre?genre=${genre}&limit=9`,

@@ -1,24 +1,10 @@
-import React, {useState} from 'react';
-import {genres} from '../utils/mock';
+import React, {useRef, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useGetSongsByGenreQuery } from '../store/actions/trackActions';
+import { genres } from '../utils/mock';
 import styled from 'styled-components';
-import {useGetSongsByGenreQuery} from '../store/actions/trackActions';
-import Player from './AudioPlayer';
-
-interface DiscoverProps {
-    tracks: Array<{
-        url: string;
-        images: {
-            coverarthq: string;
-        };
-        title: string;
-        subtitle: string;
-        key: string;
-    }>;
-    setCurrentTrackIndex: (index: number) => void;
-    setIsPlaying: (isPlaying: boolean) => void;
-    genre: string;
-    setGenre: (genre: string) => void;
-}
+import {nextSong, playPause, prevSong, setActiveSong} from "../store/slice/player";
+import AudioPlayer from "./AudioPlayer";
 
 const ScrollableContainer = styled.div`
   overflow-y: scroll;
@@ -34,20 +20,16 @@ const ScrollableContainer = styled.div`
   }
 `;
 
-const Discover: React.FC<DiscoverProps> = ({
-                                               tracks,
-                                               setCurrentTrackIndex,
-                                               setIsPlaying,
-                                               genre,
-                                               setGenre,
-                                           }) => {
 
-    const playTrack = (trackUrl: string) => {
-        const trackIndex = tracks.findIndex((track) => track.key === trackUrl);
-        console.log(trackUrl)
-        setCurrentTrackIndex(trackIndex);
-        setIsPlaying(true);
-    };
+
+    const Discover: React.FC = () => {
+    const [genre, setGenre] = useState<string>('POP');
+    const { data: genreData } = useGetSongsByGenreQuery(genre);
+    const tracks = genreData ? Object.values(genreData.tracks) : [];
+    const dispatch = useDispatch();
+        if (!genreData){
+            return <div>load</div>
+        }
     const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setGenre(e.target.value);
     };
@@ -75,19 +57,29 @@ const Discover: React.FC<DiscoverProps> = ({
                 <div
                     className="flex flex-wrap gap-8 w-full p-4 bg-fuchsia-300 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer"
                 >
-                    {tracks.map((track) => (
-                        <div className="p-4 bg-lightGray3 shadow-lg rounded-lg w-56" key={track.key}
-                             onClick={() => playTrack(track.key)}>
-                            <img
-                                src={track.images.coverarthq}
-                                alt={`${track.title} Cover`}
-                                className="w-full h-42 object-cover rounded-md"
-                            />
+                    {tracks.map((track: any, index) => (
+                        <div
+                            className="p-4 bg-lightGray3 shadow-lg rounded-lg w-56 track-card"
+                            key={track.key}
+                            onClick={() => {
+                                dispatch(setActiveSong({ song: track, data: genreData, i: index }));
+                            }}
+                        >
+                            <div className="w-full h-42 object-cover rounded-md relative">
+                                <div className="absolute inset-0 flex items-center justify-center text-white">
+                                    {/* Content inside the absolute div */}
+                                </div>
+                                <img
+                                    src={track.images.coverarthq}
+                                    alt={`${track.title} Cover`}
+                                    className="w-full h-full object-cover rounded-md"
+                                />
+                            </div>
                             <div className="flex-col flex">
-                                <p className="tx-600 font-semibold">
+                                <p className="tx-600 font-semibold text-white text-1xl">
                                     {track.title.charAt(0).toUpperCase() + track.title.slice(1)}
                                 </p>
-                                <p className="text-1xl">{track.subtitle}</p>
+                                <p className="text-14 text-white">{track.subtitle}</p>
                             </div>
                         </div>
                     ))}
