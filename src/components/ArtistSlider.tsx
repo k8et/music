@@ -35,7 +35,7 @@ const ArtistSlider: FC<ArtistCardProps> = ({ tracksChart }) => {
             style={{ width: "20%", height: "auto" }}
             className="shadow-lg rounded-full animate-slideright"
           >
-            <Link to={`/artist/${artist?.artists[0].adamid}`}>
+            <Link to={`/artist/${artist?.artists[0].adamid}/' '/' '`}>
               <img
                 src={artist?.images?.background}
                 alt="Name"

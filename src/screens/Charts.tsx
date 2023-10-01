@@ -1,50 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetSongsByGenreQuery } from "../store/actions/trackActions";
-import { genres } from "../utils/mock";
+import { useGetTopChartsQuery } from "../store/actions/trackActions";
 import { setActiveSong } from "../store/slice/player";
-import PlayPause from "./PlayPause";
+import PlayPause from "../components/PlayPause";
 import { Link } from "react-router-dom";
-import { ScrollableContainer } from "./ScrollableContainer";
+import { ScrollableContainer } from "../components/ScrollableContainer";
 
-const Discover: React.FC = () => {
-  const [genre, setGenre] = useState<string>("POP");
-  const { data: genreData } = useGetSongsByGenreQuery(genre);
-  const tracks = genreData ? Object.values(genreData.tracks) : [];
+const Charts = () => {
   const dispatch = useDispatch();
+  const { data: chartData } = useGetTopChartsQuery("293401556");
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
-  if (!genreData) {
-    return <div>load</div>;
-  }
-  const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGenre(e.target.value);
-  };
-  console.log(tracks, "tracks");
   return (
-    <div className="flex flex-col w-full ">
-      <div className="w-full flex justify-between items-center sm:flex-row flex-col mt-4 mb-10">
-        <label
-          htmlFor="genreSelect"
-          className="block text-gray-700 font-bold mb-2"
-        >
-          Select Genre:
-        </label>
-        <select
-          id="genreSelect"
-          className="bg-lightGray2 text-white rounded-md py-2 px-4"
-          onChange={handleGenreChange}
-          value={genre}
-        >
-          {genres.map((item) => (
-            <option key={item} value={item}>
-              {item.replace(/_/g, " ")}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="flex flex-col  w-full">
+      <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10">
+        Discover Top Charts
+      </h2>
+
       <ScrollableContainer height={80}>
         <div className="flex flex-wrap sm:justify-start justify-center gap-8">
-          {tracks.map((track: any, index) => (
+          {chartData.tracks.map((track: any, index: any) => (
             <div
               className={
                 "p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer shadow-lg rounded-lg w-[250px] track-card"
@@ -55,7 +29,7 @@ const Discover: React.FC = () => {
                 <div
                   onClick={() => {
                     dispatch(
-                      setActiveSong({ song: track, data: genreData, i: index }),
+                      setActiveSong({ song: track, data: chartData, i: index }),
                     );
                   }}
                   className="absolute inset-0 flex items-center justify-center text-white"
@@ -106,4 +80,4 @@ const Discover: React.FC = () => {
   );
 };
 
-export default Discover;
+export default Charts;

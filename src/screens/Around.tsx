@@ -1,61 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useGetSongsByCountryQuery } from "../store/actions/trackActions";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetSongsByGenreQuery } from "../store/actions/trackActions";
-import { genres } from "../utils/mock";
 import { setActiveSong } from "../store/slice/player";
-import PlayPause from "./PlayPause";
+import PlayPause from "../components/PlayPause";
 import { Link } from "react-router-dom";
-import { ScrollableContainer } from "./ScrollableContainer";
+import { ScrollableContainer } from "../components/ScrollableContainer";
+// @ts-ignore
+import imgNotFound from "../assets/images.jpg";
 
-const Discover: React.FC = () => {
-  const [genre, setGenre] = useState<string>("POP");
-  const { data: genreData } = useGetSongsByGenreQuery(genre);
-  const tracks = genreData ? Object.values(genreData.tracks) : [];
+const Around = () => {
   const dispatch = useDispatch();
+  const [country, setCountry] = useState("");
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
-  if (!genreData) {
-    return <div>load</div>;
+  const { data } = useGetSongsByCountryQuery(country);
+  useEffect(() => {
+    axios
+      .get(
+        `https://geo.ipify.org/api/v2/country?apiKey=at_uviEeJMbnBB1ZwRL6eYFqtmNz4kSM`,
+      )
+      .then((res) => setCountry(res?.data?.location.country))
+      .catch((err) => console.log(err));
+  }, [country]);
+  if (!data) {
+    return <div>Load</div>;
   }
-  const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGenre(e.target.value);
-  };
-  console.log(tracks, "tracks");
+
   return (
-    <div className="flex flex-col w-full ">
-      <div className="w-full flex justify-between items-center sm:flex-row flex-col mt-4 mb-10">
-        <label
-          htmlFor="genreSelect"
-          className="block text-gray-700 font-bold mb-2"
-        >
-          Select Genre:
-        </label>
-        <select
-          id="genreSelect"
-          className="bg-lightGray2 text-white rounded-md py-2 px-4"
-          onChange={handleGenreChange}
-          value={genre}
-        >
-          {genres.map((item) => (
-            <option key={item} value={item}>
-              {item.replace(/_/g, " ")}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="flex flex-col">
+      <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10">
+        Around you <span className="font-black">{country}</span>
+      </h2>
       <ScrollableContainer height={80}>
         <div className="flex flex-wrap sm:justify-start justify-center gap-8">
-          {tracks.map((track: any, index) => (
+          {data.map((track: any, index: any) => (
             <div
               className={
-                "p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer shadow-lg rounded-lg w-[250px] track-card"
+                "p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer shadow-lg rounded-lg w-[250px] h-[300px] track-card"
               }
               key={track.key}
             >
-              <div className="w-full h-42 object-cover rounded-md relative">
+              <div className="w-full h-52 object-cover rounded-md relative">
                 <div
                   onClick={() => {
                     dispatch(
-                      setActiveSong({ song: track, data: genreData, i: index }),
+                      setActiveSong({ song: track, data: data, i: index }),
                     );
                   }}
                   className="absolute inset-0 flex items-center justify-center text-white"
@@ -67,7 +56,7 @@ const Discover: React.FC = () => {
                   />
                 </div>
                 <img
-                  src={track.images.coverarthq}
+                  src={track.photo_url || imgNotFound}
                   alt={`${track.title} Cover`}
                   className={`w-full h-full object-cover rounded-md ${
                     activeSong?.title === track.title && "opacity-30"
@@ -77,7 +66,7 @@ const Discover: React.FC = () => {
               <div className="flex-col flex">
                 <Link
                   to={`/songs/${track?.key}/${encodeURIComponent(
-                    track.images.coverarthq,
+                    track.images?.coverarthq,
                   )}/${
                     track.title.charAt(0).toUpperCase() + track.title.slice(1)
                   }`}
@@ -106,4 +95,4 @@ const Discover: React.FC = () => {
   );
 };
 
-export default Discover;
+export default Around;

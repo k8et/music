@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { nextSong, playPause, prevSong } from "../store/slice/player";
-
+// @ts-ignore
+import img from "../assets/images.jpg";
 const PlayerContainer = styled.div`
-  position: absolute;
+  position: fixed;
   height: 7rem;
   bottom: 0;
   left: 0;
@@ -32,12 +33,12 @@ const PlayerContainer = styled.div`
 `;
 
 const TrackInfo = styled.div`
-  padding: 5px;
+  padding: 5px 0 0 20px;
   color: #fff;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 300px;
+  justify-content: start;
+  width: 500px;
 `;
 
 const ControlButton = styled.button`
@@ -67,7 +68,7 @@ const SliderContainer = styled.div`
 `;
 
 const SliderTime = styled.input`
-  width: 70%;
+  width: 90%;
   height: 5px;
   margin-top: 8px;
 `;
@@ -109,7 +110,6 @@ const Player = () => {
     };
   }, []);
   useEffect(() => {
-    // Check if isActive has changed and audioRef is available
     if (audioRef.current) {
       if (playerState.isActive) {
         audioRef.current.play();
@@ -158,14 +158,34 @@ const Player = () => {
       audioRef.current.currentTime = newTime;
     }
   };
-
   return (
     <PlayerContainer>
-      <TrackInfo>{playerState.activeSong.title}</TrackInfo>
+      <TrackInfo>
+        <img
+          src={playerState.activeSong?.images?.coverart || img}
+          alt="cover art"
+          className={`
+        ${
+          playerState.isPlaying && playerState.isActive
+            ? "animate-[spin_3s_linear_infinite]"
+            : ""
+        }
+        hidden sm:block h-16 w-16 mr-4 rounded-full
+      `}
+        />
+        {playerState?.activeSong?.title ||
+          playerState?.activeSong?.attributes?.name ||
+          playerState?.activeSong?.heading?.title}
+      </TrackInfo>
       <audio
         ref={audioRef}
         autoPlay={playerState.isActive}
-        src={playerState?.activeSong?.hub?.actions[1]?.uri}
+        src={
+          playerState?.activeSong?.hub?.actions[1]?.uri ||
+          playerState?.activeSong?.attributes?.previews[0]?.url ||
+          playerState?.activeSong?.stores?.apple?.previewurl ||
+          playerState?.activeSong?.ringtone
+        }
         onEnded={handleNextSong}
         // @ts-ignore
         volume={volume}
