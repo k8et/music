@@ -99,20 +99,22 @@ const Player = () => {
   const [volume, setVolume] = useState(0.3);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.addEventListener("timeupdate", handleTimeUpdate);
+    const currentAudioRef = audioRef.current;
+    if (currentAudioRef) {
+      currentAudioRef.addEventListener("timeupdate", handleTimeUpdate);
     }
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener("timeupdate", handleTimeUpdate);
+      if (currentAudioRef) {
+        currentAudioRef.removeEventListener("timeupdate", handleTimeUpdate);
       }
     };
   }, []);
+
   useEffect(() => {
     if (audioRef.current) {
       if (playerState.isActive) {
-        audioRef.current.play();
+        audioRef.current.play().then((r) => r);
       } else {
         audioRef.current.pause();
       }
@@ -138,7 +140,7 @@ const Player = () => {
       if (playerState.isPlaying) {
         audioElement.pause();
       } else {
-        audioElement.play();
+        audioElement.play().then((r) => r);
       }
 
       dispatch(playPause(!playerState.isPlaying && !playerState.isActive));
