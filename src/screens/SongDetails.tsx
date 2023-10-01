@@ -8,11 +8,11 @@ import {
 import { ScrollableContainer } from "../components/ScrollableContainer";
 
 const SongDetails = () => {
-  const { id: songId, img: img, name: name } = useParams();
+  const { id: songId, img, name } = useParams();
   const { data: chartData } = useGetTopChartsQuery("293401556");
   const { data: songData } = useGetSongDetailsQuery(songId);
-  if (!songData && !chartData) {
-    return <div>load</div>;
+  if (!songData) {
+    return <div>loading...</div>;
   }
   console.log(songData, "song");
   return (

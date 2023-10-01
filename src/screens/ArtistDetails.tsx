@@ -9,13 +9,13 @@ import ArtistSongDetails from "../components/Artist&SongDetails";
 import RelatedSongs from "../components/RelatedSongs";
 
 const ArtistDetails = () => {
-  const { id: artistId, img: img, name: name } = useParams();
+  const { id: artistId, img, name } = useParams();
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
   const { data: chartData } = useGetTopChartsQuery("293401556");
   const { data: artistData } = useGetArtistDetailsQuery(artistId);
   const data = artistData ? Object.values(artistData) : [];
-  if (!artistData && !artistData) {
-    return <div>load</div>;
+  if (!artistData) {
+    return <div>Loading...</div>;
   }
   return (
     <div className="flex flex-col w-full">

@@ -5,7 +5,7 @@ import { setActiveSong } from "../store/slice/player";
 import { useDispatch } from "react-redux";
 import { ScrollableContainer } from "./ScrollableContainer";
 
-interface RelatedSongs {
+interface RelatedSongsProps {
   data: any;
   artistId: any;
   activeSong: any;
@@ -13,7 +13,7 @@ interface RelatedSongs {
   artistData: any;
 }
 
-const RelatedSongs: FC<RelatedSongs> = ({
+const RelatedSongs: FC<RelatedSongsProps> = ({
   data,
   artistId,
   activeSong,
