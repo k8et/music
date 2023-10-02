@@ -20,7 +20,6 @@ const RelatedSongs: FC<RelatedSongsProps> = ({
   isPlaying,
   artistData,
 }) => {
-  console.log(activeSong.title, "sad");
   const dispatch = useDispatch();
   return (
     <div className="flex flex-col">

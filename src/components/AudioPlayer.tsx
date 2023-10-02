@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { nextSong, playPause, prevSong } from "../store/slice/player";
 // @ts-ignore
 import img from "../assets/images.jpg";
+import { BsArrowRepeat, BsShuffle } from "react-icons/bs";
 const PlayerContainer = styled.div`
   position: fixed;
   height: 7rem;
@@ -96,7 +97,9 @@ const Player = () => {
   const playerState = useSelector((state: any) => state.player);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  const [repeat, setRepeat] = useState(false);
   const [volume, setVolume] = useState(0.3);
+  const [random, setRandom] = useState(false);
 
   useEffect(() => {
     const currentAudioRef = audioRef.current;
@@ -148,11 +151,31 @@ const Player = () => {
   };
 
   const handleNextSong = () => {
-    dispatch(nextSong(playerState.currentIndex + 1));
+    dispatch(playPause(false));
+
+    if (!random) {
+      dispatch(
+        nextSong(
+          (playerState.currentIndex + 1) % playerState.currentSongs.length,
+        ),
+      );
+    } else {
+      dispatch(
+        nextSong(Math.floor(Math.random() * playerState.currentSongs.length)),
+      );
+    }
   };
 
   const handlePrevSong = () => {
-    dispatch(prevSong(playerState.currentIndex - 1));
+    if (playerState.currentIndex === 0) {
+      dispatch(prevSong(playerState.currentSongs.length - 1));
+    } else if (random) {
+      dispatch(
+        prevSong(Math.floor(Math.random() * playerState.currentSongs.length)),
+      );
+    } else {
+      dispatch(prevSong(playerState.currentIndex - 1));
+    }
   };
 
   const handleTimeChange = (newTime: number) => {
@@ -160,6 +183,7 @@ const Player = () => {
       audioRef.current.currentTime = newTime;
     }
   };
+
   return (
     <PlayerContainer>
       <TrackInfo>
@@ -188,13 +212,19 @@ const Player = () => {
           playerState?.activeSong?.stores?.apple?.previewurl ||
           playerState?.activeSong?.ringtone
         }
-        onEnded={handleNextSong}
+        onEnded={repeat ? () => handleTimeChange(0) : handleNextSong}
         // @ts-ignore
         volume={volume}
       />
 
       <ControlContainer>
         <ControlButtonContainer>
+          <BsArrowRepeat
+            size={20}
+            color={repeat ? "red" : "white"}
+            onClick={() => setRepeat((prev) => !prev)}
+            className="hidden sm:block cursor-pointer"
+          />
           <ControlButton onClick={handlePrevSong}>
             <i className="bx bx-skip-previous text-3xl"></i>
           </ControlButton>
@@ -208,6 +238,12 @@ const Player = () => {
           <ControlButton onClick={handleNextSong}>
             <i className="bx bx-skip-next text-3xl"></i>
           </ControlButton>
+          <BsShuffle
+            size={20}
+            color={random ? "red" : "white"}
+            onClick={() => setRandom((prev) => !prev)}
+            className="hidden sm:block cursor-pointer"
+          />
         </ControlButtonContainer>
         <TimeInfoContainer>
           {Math.floor(currentTime / 60)}:
