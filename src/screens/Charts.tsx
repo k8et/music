@@ -5,19 +5,23 @@ import { setActiveSong } from "../store/slice/player";
 import PlayPause from "../components/PlayPause";
 import { Link } from "react-router-dom";
 import { ScrollableContainer } from "../components/ScrollableContainer";
+import Loader from "../components/Loader";
 
 const Charts = () => {
   const dispatch = useDispatch();
-  const { data: chartData } = useGetTopChartsQuery("293401556");
+  const { data: chartData, isFetching } = useGetTopChartsQuery("293401556");
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
+  if (isFetching) {
+    return <Loader />;
+  }
   return (
     <div className="flex flex-col  w-full">
-      <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10">
+      <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10 w-full justify-center flex xl:justify-start">
         Discover Top Charts
       </h2>
 
-      <ScrollableContainer height={80}>
-        <div className="flex flex-wrap sm:justify-start justify-center gap-8">
+      <ScrollableContainer height={70}>
+        <div className="flex flex-wrap xl:justify-start justify-center gap-8">
           {chartData.tracks.map((track: any, index: any) => (
             <div
               className={

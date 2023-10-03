@@ -21,6 +21,9 @@ const RelatedSongs: FC<RelatedSongsProps> = ({
   artistData,
 }) => {
   const dispatch = useDispatch();
+  if (data.length === 0) {
+    return <div>Load</div>;
+  }
   return (
     <div className="flex flex-col">
       <h1 className="font-bold text-3xl text-white">Related Songs:</h1>
@@ -66,9 +69,7 @@ const RelatedSongs: FC<RelatedSongsProps> = ({
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xl font-bold text-white">
-                      {song.attributes?.name}
-                    </p>
+                    <p className="text-xl font-bold text-white"></p>
                   )}
                   <p className="text-base text-gray-300 mt-1">
                     {artistId ? song.attributes?.albumName : song.subtitle}
@@ -77,7 +78,7 @@ const RelatedSongs: FC<RelatedSongsProps> = ({
               </div>
               <PlayPause
                 activeSong={activeSong}
-                data={song.attributes.name}
+                data={song?.attributes?.name}
                 isPlaying={isPlaying}
               />
             </div>

@@ -1,12 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 interface ArtistSongDetailsProps {
   artistId?: string;
-  artistData?: any;
-  songData?: any;
-  img: any;
-  name: any;
+  artistData?: {
+    data: any;
+    tracks: {
+      subtitle: string;
+      images: any;
+      artists: {
+        [key: string]: string | number | null | undefined;
+      }[];
+    }[];
+  };
+  songData?: {
+    subtitle: string;
+    artists: {
+      [key: string]: string | number | null | undefined;
+    };
+    genres: {
+      primary: string;
+    };
+  };
+  img: string;
+  name: string;
 }
+
 const ArtistSongDetails: React.FC<ArtistSongDetailsProps> = ({
   artistId,
   artistData,
@@ -20,7 +39,6 @@ const ArtistSongDetails: React.FC<ArtistSongDetailsProps> = ({
   const matchingArtist = artistData.tracks.find(
     (artist: any) => artist.artists[0]?.adamid === artistId,
   );
-  console.log(img);
   return (
     <div className="relative w-full flex flex-col">
       <div className="w-full sm:h-48 h-28" />

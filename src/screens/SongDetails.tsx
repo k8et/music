@@ -6,15 +6,18 @@ import {
   useGetTopChartsQuery,
 } from "../store/actions/trackActions";
 import { ScrollableContainer } from "../components/ScrollableContainer";
-
+import Loader from "../components/Loader";
 const SongDetails = () => {
-  const { id: songId, img, name } = useParams();
+  const {
+    id: songId,
+    img = "",
+    name = "",
+  } = useParams<{ id: string; img?: string; name?: string }>();
   const { data: chartData } = useGetTopChartsQuery("293401556");
   const { data: songData } = useGetSongDetailsQuery(songId);
-  if (!songData) {
-    return <div>loading...</div>;
+  if (!songData && !chartData) {
+    return <Loader />;
   }
-  console.log(songData, "song");
   return (
     <div className="flex flex-col w-full">
       <ArtistSongDetails
@@ -25,7 +28,7 @@ const SongDetails = () => {
         name={name}
       />
       <ScrollableContainer height={50}>
-        <div className="mb-10 ">
+        <div className="mb-20 ">
           <h2 className="text-white text-3xl font-bold">Lyrics:</h2>
 
           <div className="mt-5">

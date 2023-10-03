@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { ScrollableContainer } from "../components/ScrollableContainer";
 // @ts-ignore
 import imgNotFound from "../assets/images.jpg";
+import Loader from "../components/Loader";
 
 const Around = () => {
   const dispatch = useDispatch();
@@ -23,16 +24,20 @@ const Around = () => {
       .catch((err) => console.log(err));
   }, [country]);
   if (!data) {
-    return <div>Load</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col">
-      <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10">
+      <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10 w-full justify-center flex xl:justify-start">
         Around you <span className="font-black">{country}</span>
       </h2>
-      <ScrollableContainer height={80}>
-        <div className="flex flex-wrap sm:justify-start justify-center gap-8">
+      <ScrollableContainer height={70}>
+        <div className="flex flex-wrap xl:justify-start justify-center gap-8">
           {data.map((track: any, index: any) => (
             <div
               className={
@@ -66,7 +71,7 @@ const Around = () => {
               <div className="flex-col flex">
                 <Link
                   to={`/songs/${track?.key}/${encodeURIComponent(
-                    track.images?.coverarthq,
+                    track.photo_url || imgNotFound,
                   )}/${
                     track.title.charAt(0).toUpperCase() + track.title.slice(1)
                   }`}
@@ -74,16 +79,7 @@ const Around = () => {
                 >
                   {track.title.charAt(0).toUpperCase() + track.title.slice(1)}
                 </Link>
-                <Link
-                  to={
-                    track.artists
-                      ? `/artist/${track?.artists[0]
-                          ?.adamid}/${encodeURIComponent(
-                          track?.images?.background,
-                        )}/${track?.subtitle}`
-                      : "/top-artists"
-                  }
-                >
+                <Link to={`/topArtist`}>
                   <p className="text-14 text-white">{track.subtitle}</p>
                 </Link>
               </div>

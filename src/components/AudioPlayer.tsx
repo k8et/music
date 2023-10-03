@@ -206,25 +206,27 @@ const Player = () => {
       <audio
         ref={audioRef}
         autoPlay={playerState.isActive}
+        loop={repeat}
         src={
           playerState?.activeSong?.hub?.actions[1]?.uri ||
           playerState?.activeSong?.attributes?.previews[0]?.url ||
           playerState?.activeSong?.stores?.apple?.previewurl ||
           playerState?.activeSong?.ringtone
         }
-        onEnded={repeat ? () => handleTimeChange(0) : handleNextSong}
+        onEnded={handleNextSong}
         // @ts-ignore
         volume={volume}
       />
 
       <ControlContainer>
         <ControlButtonContainer>
-          <BsArrowRepeat
-            size={20}
-            color={repeat ? "red" : "white"}
-            onClick={() => setRepeat((prev) => !prev)}
-            className="hidden sm:block cursor-pointer"
-          />
+          <ControlButton onClick={() => setRepeat((prev) => !prev)}>
+            <BsArrowRepeat
+              size={20}
+              color={repeat ? "red" : "white"}
+              className="hidden sm:block cursor-pointer"
+            />
+          </ControlButton>
           <ControlButton onClick={handlePrevSong}>
             <i className="bx bx-skip-previous text-3xl"></i>
           </ControlButton>
@@ -238,12 +240,13 @@ const Player = () => {
           <ControlButton onClick={handleNextSong}>
             <i className="bx bx-skip-next text-3xl"></i>
           </ControlButton>
-          <BsShuffle
-            size={20}
-            color={random ? "red" : "white"}
-            onClick={() => setRandom((prev) => !prev)}
-            className="hidden sm:block cursor-pointer"
-          />
+          <ControlButton onClick={() => setRandom((prev) => !prev)}>
+            <BsShuffle
+              size={20}
+              color={random ? "red" : "white"}
+              className="hidden  sm:block cursor-pointer "
+            />
+          </ControlButton>
         </ControlButtonContainer>
         <TimeInfoContainer>
           {Math.floor(currentTime / 60)}:
@@ -251,7 +254,7 @@ const Player = () => {
           <SliderTime
             type="range"
             min={0}
-            max={100}
+            max={90}
             step={1}
             value={currentTime ? currentTime : 0}
             onChange={(e) => handleTimeChange(Number(e.target.value))}

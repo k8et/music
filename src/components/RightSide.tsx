@@ -6,18 +6,18 @@ import ArtistSlider from "./ArtistSlider";
 import PlayPause from "./PlayPause";
 import { Link } from "react-router-dom";
 
-const TopCharts: FC = () => {
+const RightSide: FC = () => {
   const dispatch = useDispatch();
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
   const { data: chartData } = useGetTopChartsQuery("293401556");
   const tracksChart = chartData ? Object.values(chartData.tracks) : [];
   return (
     <div className="flex-col w-full">
-      <div className="flex justify-between w-full p-4">
-        <h1 className="text-gray-700 font-bold">Top Charts</h1>
-        <button className="text-gray-300 text-base cursor-pointer">
+      <div className="flex justify-between w-full p-4 ">
+        <h1 className="text-gray-700 font-bold ">Top Charts</h1>
+        <Link to="/chart" className="text-gray-300 text-base cursor-pointer">
           See more
-        </button>
+        </Link>
       </div>
       <div>
         {tracksChart.slice(0, 5).map((item: any, i) => (
@@ -59,4 +59,4 @@ const TopCharts: FC = () => {
   );
 };
 
-export default TopCharts;
+export default RightSide;

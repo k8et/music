@@ -15,7 +15,7 @@ const ArtistSlider: FC<ArtistCardProps> = ({ tracksChart }) => {
     <div className="w-full flex flex-col mt-8">
       <div className="flex flex-row justify-between items-center">
         <h2 className="block text-gray-700 font-bold mb-2 p-2">Top Artists</h2>
-        <Link to="/artist">
+        <Link to="/topArtist">
           <p className="text-gray-300 text-base cursor-pointer p-2">See more</p>
         </Link>
       </div>

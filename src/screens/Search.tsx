@@ -10,19 +10,18 @@ import { Link } from "react-router-dom";
 const Search = () => {
   const { searchTerm } = useParams();
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
-  const { data } = useGetSongsBySearchQuery(searchTerm);
+  const { data, isFetching } = useGetSongsBySearchQuery(searchTerm);
   const dispatch = useDispatch();
-  if (!data) {
+  if (isFetching) {
     return <div>Load</div>;
   }
-  console.log(data.tracks.hits, "sonfg");
   return (
     <div className="flex flex-col w-full">
       <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10">
         Showing results for <span className="font-black">{searchTerm}</span>
       </h2>
 
-      <ScrollableContainer height={80}>
+      <ScrollableContainer height={70}>
         <div className="flex flex-wrap sm:justify-start justify-center gap-8">
           {data.tracks.hits.map((track: any, index: any) => (
             <div
