@@ -17,12 +17,13 @@ const TopArtists = () => {
       </h2>
       <ScrollableContainer height={70}>
         <div className="flex flex-wrap h-full xl:justify-start justify-center gap-6">
-          {data.tracks?.map((track: any) => (
+          {data.tracks?.map((track: any, index: any) => (
             <div
               className="p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer shadow-lg rounded-lg w-[250px] track-card"
               onClick={() =>
                 navigate(`/artist/${track?.artists[0].adamid}/' '/' '`)
               }
+              key={index}
             >
               <img
                 alt="song_img"

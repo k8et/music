@@ -38,6 +38,7 @@ const RelatedSongs: FC<RelatedSongsProps> = ({
                   ? "bg-[#4c426e]"
                   : "bg-transparent"
               } py-2 p-4 rounded-lg cursor-pointer mb-2`}
+              key={index}
             >
               <h3 className="font-bold text-base text-white mr-3">
                 {index + 1}.

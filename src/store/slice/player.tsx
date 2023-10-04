@@ -15,8 +15,6 @@ const playerSlice = createSlice({
   initialState,
   reducers: {
     setActiveSong: (state, action) => {
-      console.log("Вызван setActiveSong с аргументами:", action.payload);
-
       state.activeSong = action.payload.song;
       if (action.payload?.data?.artist) {
         state.currentSongs = action.payload.data.tracks?.hits;

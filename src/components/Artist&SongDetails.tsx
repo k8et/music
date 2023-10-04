@@ -1,32 +1,7 @@
-import React from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
-
-interface ArtistSongDetailsProps {
-  artistId?: string;
-  artistData?: {
-    data: any;
-    tracks: {
-      subtitle: string;
-      images: any;
-      artists: {
-        [key: string]: string | number | null | undefined;
-      }[];
-    }[];
-  };
-  songData?: {
-    subtitle: string;
-    artists: {
-      [key: string]: string | number | null | undefined;
-    };
-    genres: {
-      primary: string;
-    };
-  };
-  img: string;
-  name: string;
-}
-
-const ArtistSongDetails: React.FC<ArtistSongDetailsProps> = ({
+import { ArtistSongDetailsProps } from "../interface/ArtistSongDetailsProps";
+const ArtistSongDetails: FC<ArtistSongDetailsProps> = ({
   artistId,
   artistData,
   songData,
