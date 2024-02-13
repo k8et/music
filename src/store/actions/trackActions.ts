@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const myApi = createApi({
   reducerPath: "myApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://music-server-production.up.railway.app/api/",
+    baseUrl: "https://music-server-production.up.railway.app/api/",
   }),
   endpoints: (builder) => ({
     getAllData: builder.query({
