@@ -112,7 +112,7 @@ const Player = () => {
     <PlayerContainer>
       <TrackInfo>
         <img
-          src={playerState.activeSong?.images?.coverart || img}
+          src={playerState.activeSong?.image_url || img}
           alt="cover art"
           className={`
         ${
@@ -132,13 +132,13 @@ const Player = () => {
         autoPlay={playerState.isActive}
         loop={repeat}
         src={
-          playerState?.activeSong?.hub?.actions[1]?.uri ||
+          playerState?.activeSong?.preview_url ||
           playerState?.activeSong?.attributes?.previews[0]?.url ||
           playerState?.activeSong?.stores?.apple?.previewurl ||
           playerState?.activeSong?.ringtone
         }
         onEnded={handleNextSong}
-        // @ts-ignore
+          // @ts-ignore
         volume={volume}
       />
 
