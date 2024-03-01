@@ -3,36 +3,43 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const myApi = createApi({
   reducerPath: "myApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://shazam-core7.p.rapidapi.com/",
+    baseUrl: "https://shazam.p.rapidapi.com/",
     prepareHeaders: (headers) => {
-      headers.set(
-        "X-RapidAPI-Key",
-        "d2a5c0eb10msh16f501bbec72bfep1bd565jsn3fc8e2e4fe34",
-      );
-      headers.set("X-RapidAPI-Host", "shazam-core7.p.rapidapi.com");
+      headers.set("X-RapidAPI-Key", "85a9970cb2msh8160968b53a049dp15a532jsnb7e972328843");
+      headers.set("X-RapidAPI-Host", "shazam.p.rapidapi.com");
       return headers;
     },
   }),
   endpoints: (builder) => ({
     getTopCharts: builder.query({
-      query: (id) => `songs/list-recommendations?id=${id}&limit=12`,
+      query: (params) => ({
+        url: 'charts/track',
+        params,
+      }),
     }),
-    getSongsByGenre: builder.query({
-      query: (genre) =>
-        `charts/get-top-songs-in_world_by_genre?genre=${genre}&limit=12`,
-    }),
-    getSongsByCountry: builder.query({
-      query: (country) =>
-        `charts/get-top-songs-in-country?country_code=${country}&limit=12`,
+    getSongsByRecommendation: builder.query({
+      query: (params) => ({
+        url: 'songs/list-recommendations',
+        params,
+      }),
     }),
     getSongsBySearch: builder.query({
-      query: (searchTerm) => `search?term=${searchTerm}&limit=12`,
+      query: (params) => ({
+        url: 'search',
+        params,
+      }),
     }),
     getArtistDetails: builder.query({
-      query: (artistId) => `artist/get-top-songs?id=${artistId}`,
+      query: (params) => ({
+        url: 'artists/get-top-songs',
+        params,
+      }),
     }),
     getSongDetails: builder.query({
-      query: (songId) => `songs/get_details?id=${songId}`,
+      query: (params) => ({
+        url: 'songs/get-details',
+        params,
+      }),
     }),
     getSongRelated: builder.query({
       query: (songId) => `URL_ДЛЯ_СВЯЗАННЫХ_ПЕСЕН/${songId}`,
@@ -42,8 +49,7 @@ export const myApi = createApi({
 
 export const {
   useGetTopChartsQuery,
-  useGetSongsByGenreQuery,
-  useGetSongsByCountryQuery,
+  useGetSongsByRecommendationQuery,
   useGetSongsBySearchQuery,
   useGetArtistDetailsQuery,
   useGetSongDetailsQuery,

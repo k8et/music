@@ -16,12 +16,13 @@ const ArtistDetails = () => {
     name = "",
   } = useParams<{ id: string; img?: string; name?: string }>();
   const { activeSong, isPlaying } = useSelector((state: any) => state.player);
-  const { data: chartData } = useGetTopChartsQuery("293401556");
-  const { data: artistData } = useGetArtistDetailsQuery(artistId);
+  const { data: chartData } = useGetTopChartsQuery({pageSize: '20', locale: 'en-US', startFrom: "0"});
+  const { data: artistData } = useGetArtistDetailsQuery({id: artistId, l: 'en-US'});
   const data = artistData ? Object.values(artistData) : [];
   if (!artistData && !chartData) {
     return <Loader />;
   }
+  console.log(artistData,"artistData")
   return (
     <div className="flex flex-col w-full">
       <ArtistSongDetails
