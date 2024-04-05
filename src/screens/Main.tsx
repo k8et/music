@@ -44,7 +44,7 @@ const Main: FC = () => {
                                     />
                                 </div>
                                 <img
-                                    src={track.images.coverarthq}
+                                    src={track?.images?.coverarthq}
                                     alt={`${track.title} Cover`}
                                     className={`w-full h-full object-cover rounded-md ${
                                         activeSong?.title === track.title && "opacity-30"
@@ -54,7 +54,7 @@ const Main: FC = () => {
                             <div className="flex-col flex">
                                 <Link
                                     to={`/songs/${track?.key}/${encodeURIComponent(
-                                        track.images.coverarthq,
+                                        track?.images?.coverarthq,
                                     )}/${
                                         track.title.charAt(0).toUpperCase() + track.title.slice(1)
                                     }`}
